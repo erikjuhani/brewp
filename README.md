@@ -2,6 +2,8 @@
 
 A simple interactive shell script to manage outdated brew packages.
 
+<img alt="Running brewp shell script" width="600" src="https://raw.githubusercontent.com/erikjuhani/brewp/main/demo.gif">
+
 ## Required dependencies 
 
 - [brew](https://brew.sh)
