@@ -22,6 +22,12 @@ By default the install script assumes that executable scripts are found under
 `$HOME/bin` folder. The script will automatically create such folder if it does
 not exist. However one should remember to add this location to `PATH`.
 
+### Updating
+
+`brewp` keeps track of HEAD commit hash as the version, which is annotated to
+the `brewp` shell script file. To update `brewp` to latest version run the
+install script again.
+
 ### Note
 
 `brewp` expects that `brew` and `gum` are installed and found in the `PATH`.
