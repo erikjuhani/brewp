@@ -28,41 +28,36 @@ if [[ "$OSTYPE" != "darwin"* ]]; then
 fi
 
 ############################
-#          HELPERS         #
-############################
-
-command_exists() {
-  if ! command -v $1 > /dev/null; then 
-    return 1
-  fi
-}
-
-iterate_required_dependencies() {
-  arr=($@)
-  for item in "${arr[@]}"
-  do
-    if ! command_exists $item; then
-      echo "required dependency \"${item}\" does not exist"
-      return 1
-    fi
-  done
-}
-
-############################
 #           BREWP          #
 ############################
 
-iterate_required_dependencies "${REQUIRED_DEPENDENCIES[@]}"
+JQ_BREW_PACKAGE_FILTER='[.formulae[] | [.name,(.installed_versions[0]),("-> "+.current_version)]] | .[] | join(" ")'
 
-selected_for_upgrade="$(gum spin --show-output -- brew outdated --json | jq '[.formulae[] | [.name,(.installed_versions[0]),("-> "+.current_version)]] | .[] | join(" ")' -r | gum filter --no-limit)"
+# Check that required dependencies are found in $PATH
+for dependency in "${REQUIRED_DEPENDENCIES[@]}"
+do
+  if ! command -v $dependency > /dev/null; then
+    echo "required dependency \"${dependency}\" does not exist"
+    return 1
+  fi
+done
 
-if [ ! ${#selected_for_upgrade[@]} -eq 0 ]; then
+selected_for_upgrade="$(gum spin --show-output -- brew outdated --json \
+  | jq "$JQ_BREW_PACKAGE_FILTER" -r \
+  | gum filter --no-limit)"
+
+if [ ${#selected_for_upgrade[@]} -gt 0 ]; then
   arr=()
-  for item in "${selected_for_upgrade[@]}"
+  for pkg in "${selected_for_upgrade[@]}"
   do
-    arr+=($(echo "${item}" | awk '{print $1}'))
+    arr+=($(echo "${pkg}" | awk '{print $1}'))
   done
-  gum join --align=left --vertical "Selected for upgrade" "$(gum style --border=normal --padding="1 2" "$selected_for_upgrade")"
+
+  gum join --align=left --vertical "Selected for upgrade" \
+    "$(gum style --border=normal --padding="1 2" "$selected_for_upgrade")"
+
   gum confirm --affirmative="Yes" --negative="No"
-  echo "$(gum spin --show-output --title "Upgrading packages..." -- brew upgrade -q "${arr[@]}")"
+
+  echo "$(HOMEBREW_COLOR=1 HOMEBREW_NO_INSTALL_UPGRADE=1 HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_ENV_HINTS=1 \
+    gum spin --show-output --title "Upgrading packages..." -- brew upgrade -q "${arr[@]}")"
 fi

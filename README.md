@@ -15,7 +15,7 @@ Easiest way to install `brewp` is with this oneliner. You can also just
 download `brewp.sh` and place it in desired directory.
 
 ```sh
-curl -L https://raw.githubusercontent.com/erikjuhani/brewp/main/install.sh | sh
+curl -sSL https://raw.githubusercontent.com/erikjuhani/brewp/main/install.sh | sh
 ```
 
 By default the install script assumes that executable scripts are found under

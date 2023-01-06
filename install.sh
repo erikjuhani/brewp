@@ -48,7 +48,7 @@ else
     echo "Updating \`brewp\` $HEAD_SHA_OURS -> $HEAD_SHA_THEIRS"
     download_brewp
     annotate_version /tmp/brewp_head $HEAD_SHA_THEIRS
-    echo "Updated \`brewp\` to latest version"
+    echo "Updated \`brewp\` to latest version $HEAD_SHA_THEIRS"
     exit 0
   fi
 
