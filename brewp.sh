@@ -31,7 +31,7 @@ fi
 #           BREWP          #
 ############################
 
-JQ_BREW_PACKAGE_FILTER='[.formulae[] | [.name,(.installed_versions[0]),("-> "+.current_version)]] | .[] | join(" ")'
+JQ_BREW_PACKAGE_FILTER='[[.formulae[],.casks[]] | .[] | [.name,(.installed_versions | if type=="array" then .[0] else . end),("-> "+.current_version)]] | .[] | join(" ")'
 
 # Check that required dependencies are found in $PATH
 for dependency in "${REQUIRED_DEPENDENCIES[@]}"
